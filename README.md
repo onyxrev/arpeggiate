@@ -84,7 +84,7 @@ defmodule PayForPie do
     Pie.bake(state.pie_type)
   end
 
-  defp baking_failed(_params, state) do
+  def baking_failed(_params, state) do
     {:ok, refund} = CreditCard.refund(payment.id)
     {:ok, email} = Mailer.send_apology(state.email)
     {:error, state}
