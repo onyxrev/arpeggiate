@@ -4,7 +4,7 @@ defmodule Arpeggiate.Mixfile do
   def project do
     [
       app: :arpeggiate,
-      version: "0.0.1",
+      version: "1.0.0",
       elixir: "~> 1.0",
       elixirc_paths: elixirc_paths(Mix.env),
       description: description(),
