@@ -103,6 +103,10 @@ defmodule Arpeggiate do
   end
 
   defp process_step(module, step, params, {:ok, state}) do
+    unless function_exported?(module, step.name, 2) do
+      raise "#{module} processing hit step :#{step.name} but it is undefined"
+    end
+
     case apply(module, step.name, [params, state]) do
       {:ok, new_state} ->
         {:ok, new_state}

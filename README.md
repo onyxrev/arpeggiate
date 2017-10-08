@@ -16,11 +16,13 @@ The schema of the operation state is defined by passing a `schema` block.
 
 ## Loading
 
-Typically input parameters are casted to the state struct and validation is optionally run. We do this by defining a load method that receives the params and converts it into state.
+Typically input parameters are cast to the state struct and validation is optionally run. We do this by defining a load method that receives the params and converts it into state.
 
 ## Processing
 
 To run the operation, we call `process` with the input parameters. If the whole operation succeeds, an `{:ok, state}` tuple is returned, with state being the state returned by the last step. In the error case, an `{:error, state, validation_step}` is returned, with state being the state returned by the failing step's error handler and validation_step being the name of the step that failed (represented as an atom).
+
+If you need validation, call `validate` right away and pass the result to the steps. If you don't need validation, you can call `step` directly.
 
 ## Example
 
