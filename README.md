@@ -1,3 +1,5 @@
+[![Build Status](https://semaphoreci.com/api/v1/onyxrev/arpeggiate/branches/master/badge.svg)](https://semaphoreci.com/onyxrev/arpeggiate)
+
 # Arpeggiate
 
 Write step operations with input validation, type casting, and error handling.
