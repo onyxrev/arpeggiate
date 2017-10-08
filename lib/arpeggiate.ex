@@ -53,7 +53,7 @@ defmodule Arpeggiate do
       end
 
       def invalid(params, state) do
-        {:ok, state}
+        state
       end
     end
   end
@@ -122,7 +122,7 @@ defmodule Arpeggiate do
   end
 
   defp process_error(module, %Arpeggiate.Step{name: name, error: error}, params, error_state) do
-    {_status, state} = apply(module, error, [params, error_state])
+    state = apply(module, error, [params, error_state])
     {:error, state, name}
   end
 end

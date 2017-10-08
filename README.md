@@ -69,7 +69,8 @@ defmodule PayForPie do
   end
 
   def payment_failed(_params, state) do
-    {:error, :payment_failed}
+    # no need for a status tuple since this is always an error condition
+    :payment_failed
   end
 
   # --- step 2

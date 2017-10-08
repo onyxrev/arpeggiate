@@ -29,7 +29,7 @@ defmodule Arpeggiate.PaidUserOperation do
   end
 
   def bad_payment_method(_params, _state) do
-    {:error, :payment_failed}
+    :payment_failed
   end
 
   def save_user(_params, state) do
