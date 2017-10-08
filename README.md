@@ -20,7 +20,7 @@ Typically input parameters are cast to the state struct and validation is option
 
 ## Processing
 
-To run the operation, we call `process` with the input parameters. If the whole operation succeeds, an `{:ok, state}` tuple is returned, with state being the state returned by the last step. In the error case, an `{:error, state, validation_step}` is returned, with state being the state returned by the failing step's error handler and validation_step being the name of the step that failed (represented as an atom).
+To run the operation, we call `process` with the input parameters. If the whole operation succeeds, an `{:ok, state}` tuple is returned, with state being the state returned by the last step. In the error case, the step sequence is halted, an `{:error, state, validation_step}` tuple is returned, with state being the state returned by the failing step's error handler and `validation_step` being the name of the step that failed (represented as an atom).
 
 If you need validation, call `validate` right away and pass the result to the steps. If you don't need validation, you can call `step` directly.
 
@@ -64,9 +64,9 @@ defmodule PayForPie do
 
     # if the result of CreditCard.charge is an {:ok, payment} tuple, the
     # operation will continue to the next step with the updated state. if the
-    # result is an {:error, payment} tuple, the operation will run the error
-    # handler specified for the step. in either case we want to cast the payment
-    # into the state
+    # result is an {:error, payment} tuple, the operation will halt and run the
+    # error handler specified for the step. in either case we want to cast the
+    # payment into the state
     {status, state |> cast_embed(:payment, payment)}
   end
 
