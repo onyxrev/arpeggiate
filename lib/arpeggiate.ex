@@ -25,13 +25,13 @@ defmodule Arpeggiate do
     end
   end
 
-  defmacro contract(do: block) do
+  defmacro schema(do: block) do
     quote do
       schema("", do: unquote(block))
     end
   end
 
-  defmacro validate(fun) do
+  defmacro load(fun) do
     quote do
       def validate do
         step(:validate, error: :invalid)
@@ -108,7 +108,7 @@ defmodule Arpeggiate do
         {:ok, new_state}
       {:error, error_state} ->
         process_error(module, step, params, error_state)
-      result = {:error, state, name} ->
+      result = {:error, _state, _name} ->
         result
     end
   end

@@ -1,12 +1,12 @@
 defmodule Arpeggiate.PaidUserOperation do
   use Arpeggiate
 
-  contract do
+  schema do
     field :name, :string
     field :credit_card_number, :integer
   end
 
-  validate fn params ->
+  load fn params ->
     params_to_struct(params)
     |> cast(params, [:name, :credit_card_number])
     |> validate_required([:name, :credit_card_number])
@@ -28,7 +28,7 @@ defmodule Arpeggiate.PaidUserOperation do
     end
   end
 
-  def bad_payment_method(_params, state) do
+  def bad_payment_method(_params, _state) do
     {:error, :payment_failed}
   end
 
