@@ -41,7 +41,7 @@ defmodule Arpeggiate do
         step(operation, :validate, error: :invalid)
       end
 
-      def validate(params, state) do
+      def validate(state, params) do
         result = unquote(fun).(params)
 
         case result.valid? do
@@ -52,7 +52,7 @@ defmodule Arpeggiate do
         end
       end
 
-      def invalid(params, state) do
+      def invalid(state, params) do
         state
       end
     end
@@ -103,17 +103,31 @@ defmodule Arpeggiate do
   end
 
   defp process_step(module, step, params, {:ok, state}) do
-    unless function_exported?(module, step.name, 2) do
-      raise "#{module} processing hit step :#{step.name} but it is undefined"
-    end
+    # allow folks to define steps with either state and params
+    # (step/2) or just state arguments (step/1)
+    result = apply_step_with_params(module, step, state, params) ||
+             apply_step_without_params(module, step, state, params) ||
+             raise "#{module} processing hit step :#{step.name} but it is undefined"
 
-    case apply(module, step.name, [params, state]) do
+    case result do
       {:ok, new_state} ->
         {:ok, new_state}
       {:error, error_state} ->
         process_error(module, step, params, error_state)
-      result = {:error, _state, _name} ->
+      {:error, _state, _name} ->
         result
+    end
+  end
+
+  defp apply_step_with_params(module, step, state, params) do
+    if function_exported?(module, step.name, 2) do
+      apply(module, step.name, [state, params])
+    end
+  end
+
+  defp apply_step_without_params(module, step, state, _params) do
+    if function_exported?(module, step.name, 1) do
+      apply(module, step.name, [state])
     end
   end
 
@@ -126,7 +140,22 @@ defmodule Arpeggiate do
   end
 
   defp process_error(module, %Arpeggiate.Step{name: name, error: error}, params, error_state) do
-    state = apply(module, error, [params, error_state])
-    {:error, state, name}
+    result = process_error_with_params(module, error, error_state, params) ||
+             process_error_without_params(module, error, error_state, params) ||
+             raise "#{module} error handler :#{error} specified but it is undefined"
+
+    {:error, result, name}
+  end
+
+  defp process_error_with_params(module, error, error_state, params) do
+    if function_exported?(module, error, 2) do
+      apply(module, error, [error_state, params])
+    end
+  end
+
+  defp process_error_without_params(module, error, error_state, _params) do
+    if function_exported?(module, error, 1) do
+      apply(module, error, [error_state])
+    end
   end
 end

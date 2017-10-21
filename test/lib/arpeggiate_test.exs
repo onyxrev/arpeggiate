@@ -19,7 +19,7 @@ defmodule Arpeggiate.PaidUserOperation do
     |> run(params)
   end
 
-  def run_credit_card(params, state) do
+  def run_credit_card(state, params) do
     case params["credit_card_number"] do
       4242424242424242 ->
         {:ok, state}
@@ -28,11 +28,11 @@ defmodule Arpeggiate.PaidUserOperation do
     end
   end
 
-  def bad_payment_method(_params, _state) do
+  def bad_payment_method(_state, _params) do
     :payment_failed
   end
 
-  def save_user(_params, state) do
+  def save_user(state) do
     {:ok, Map.put(state, :id, "abc123")}
   end
 end

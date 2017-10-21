@@ -8,6 +8,8 @@ Write step operations with input validation, type casting, and error handling.
 
 Quite often in software you want to perform a series of steps towards an end result while gracefully handling error conditions. This is the goal of arpeggiate. With arpeggiate, you can define any number of steps to perform. Each step hands its state to the next step in a functional way using `{:ok, state}`. Error handlers can be defined for each step to facilitate cleanup or other such error-handling activities. Triggering the error state is as simple as returning an `{:error, state}` tuple. Error handlers are optional. Steps without error handlers will proceed to the next step regardless of their outcome.
 
+Generally you want to work with step state, but occasionally directly accessing the raw params as passed into the operation is useful. As such, steps may be either arity 1 `(state)` or, if you require access to the params in a step or error handler, arity 2 `(state, params)` is also supported.
+
 ## Schema
 
 Arpeggiate leverages many of the robust casting and validation features of the Ecto project to process each operation's input parameters. Arpeggiate's operation state is an `Ecto.Changeset`, which provides a familiar interface for changing the state and handling error messages.
@@ -59,7 +61,9 @@ defmodule PayForPie do
 
   # --- step 1
 
-  def run_credit_card(params, state) do
+  # steps can be defined with arity 1 or arity 2, taking either (state, params)
+  # arguments, or just (state) if params aren't needed for the particular step
+  def run_credit_card(state, params) do
     {status, payment} = CreditCard.charge(state.credit_card_number)
 
     # if the result of CreditCard.charge is an {:ok, payment} tuple, the
@@ -70,21 +74,22 @@ defmodule PayForPie do
     {status, state |> cast_embed(:payment, payment)}
   end
 
-  def payment_failed(_params, state) do
+  def payment_failed(state) do
     # no need for a status tuple since this is always an error condition
     :payment_failed
   end
 
   # --- step 2
 
-  def bake_pie(_params, state) do
+  # here's an example of an arity 1 step where params aren't used
+  def bake_pie(state) do
     # if Pie.bake returns an {:ok, pie} tuple, the operation will return the
     # pie. if Pie.bake returns an {:error, _something_else} tuple, the
     # operation will run the error handler specified for the step
     Pie.bake(state.pie_type)
   end
 
-  def baking_failed(_params, state) do
+  def baking_failed(state) do
     {:ok, refund} = CreditCard.refund(payment.id)
     {:ok, email} = Mailer.send_apology(state.email)
     {:error, state}
