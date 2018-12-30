@@ -4,7 +4,7 @@ defmodule Arpeggiate.Mixfile do
   def project do
     [
       app: :arpeggiate,
-      version: "1.1.1",
+      version: "1.2.0",
       elixir: "~> 1.0",
       elixirc_paths: elixirc_paths(Mix.env),
       description: description(),
@@ -30,7 +30,7 @@ defmodule Arpeggiate.Mixfile do
   end
 
   defp deps do
-    [{:ecto, "~> 2.1.0"},
+    [{:ecto, "~> 3.0.0"},
      {:ex_doc, ">= 0.0.0", only: :dev}]
   end
 
