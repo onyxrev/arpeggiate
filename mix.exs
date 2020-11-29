@@ -30,7 +30,7 @@ defmodule Arpeggiate.Mixfile do
   end
 
   defp deps do
-    [{:ecto, "~> 3.4.0"},
+    [{:ecto, "~> 3.5.0"},
      {:ex_doc, ">= 0.0.0", only: :dev}]
   end
 
