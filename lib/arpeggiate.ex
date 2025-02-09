@@ -1,7 +1,7 @@
 defmodule Arpeggiate do
   defstruct steps: []
 
-  defmacro __using__(__) do
+  defmacro __using__(_opts) do
     quote do
       use Ecto.Schema
 
@@ -119,6 +119,10 @@ defmodule Arpeggiate do
     end
   end
 
+  defp process_step(_module, _step, _params, failed_tuple = {:error, _failed_step_name, _state}) do
+    failed_tuple
+  end
+
   defp apply_step_with_params(module, step, state, params) do
     if function_exported?(module, step.name, 2) do
       apply(module, step.name, [state, params])
@@ -129,10 +133,6 @@ defmodule Arpeggiate do
     if function_exported?(module, step.name, 1) do
       apply(module, step.name, [state])
     end
-  end
-
-  defp process_step(_module, _step, _params, failed_tuple = {:error, _failed_step_name, _state}) do
-    failed_tuple
   end
 
   defp process_error(_module, %Arpeggiate.Step{error: nil}, _params, error_state) do
